@@ -1,1 +1,147 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Feedback</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="active" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Feedback</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Feedback</h2><p>Review passenger comments and service ratings.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search feedback..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Feedback ID</th><th>Passenger</th><th>Trip</th><th>Rating</th><th>Date</th><th>Comment</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>F001</td><td>Nimal Perera</td><td>TRP001</td><td>5 / 5</td><td>2026-09-22</td><td>Comfortable journey.</td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>F002</td><td>Sarah Fernando</td><td>TRP002</td><td>4 / 5</td><td>2026-09-22</td><td>Good service and on time.</td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>F003</td><td>Kasun Silva</td><td>TRP003</td><td>3 / 5</td><td>2026-09-21</td><td>Vehicle could be cleaner.</td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>F004</td><td>Ayesha Kumar</td><td>TRP004</td><td>5 / 5</td><td>2026-09-20</td><td>Easy booking experience.</td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Feedbac</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Feedback ID<input></label><label>Passenger<input></label><label>Trip ID<input></label><label>Rating<input></label><label>Comment<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartMove - Feedback</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+<aside class="side" id="side">
+<div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div>
+<nav class="nav">
+<a href="dashboard.html">Dashboard</a>
+<a href="vehicles.html">Vehicles</a>
+<a href="drivers.html">Drivers</a>
+<a href="routes.html">Routes</a>
+<a href="passengers.html">Passengers</a>
+<a href="trips.html">Trips</a>
+<a href="bookings.html">Bookings</a>
+<a href="payments.html">Payments</a>
+<a href="maintenance.html">Maintenance</a>
+<a class="active" href="feedback.html">Feedback</a>
+<a href="reports.html">Reports</a>
+<a href="settings.html">Settings</a>
+</nav>
+</aside>
+
+<main class="main">
+<header class="top">
+<div style="display:flex;align-items:center;gap:12px">
+<button class="menu" onclick="toggleMenu()">☰</button>
+<h1>Feedback</h1>
+</div>
+<div class="user">Management Portal | Administrator</div>
+</header>
+
+<section class="content">
+<div class="intro">
+<h2>Feedback</h2>
+<p>Review passenger comments and service ratings.</p>
+</div>
+
+<div class="toolbar">
+<input id="search" oninput="searchTable()" placeholder="Search feedback...">
+<button class="btn primary" onclick="openModal()">+ Add</button>
+</div>
+
+<div class="panel">
+<div class="tablewrap">
+<table>
+<thead>
+<tr>
+<th>Feedback ID</th>
+<th>Passenger</th>
+<th>Trip</th>
+<th>Rating</th>
+<th>Date</th>
+<th>Comment</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="dataRows"></tbody>
+
+</table>
+</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modalbox">
+<div class="modalhead">
+<h3>Add Feedback</h3>
+<button class="close" onclick="closeModal()">×</button>
+</div>
+
+<div class="form">
+<label>Feedback ID<input></label>
+<label>Passenger<input></label>
+<label>Trip ID<input></label>
+<label>Rating<input></label>
+<label>Comment<input></label>
+</div>
+
+<div class="modalfoot">
+<button class="btn" onclick="closeModal()">Cancel</button>
+<button class="btn primary" onclick="saveRecord()">Save</button>
+</div>
+</div>
+</div>
+
+</section>
+</main>
+</div>
+
+<script src="js/app.js"></script>
+
+<script>
+async function loadMongoReviews() {
+    const dataRows = document.getElementById("dataRows");
+
+    try {
+        const response = await fetch("http://localhost:3000/api/reviews");
+
+        if (!response.ok) {
+            throw new Error("Failed to load reviews");
+        }
+
+        const reviews = await response.json();
+
+        dataRows.innerHTML = "";
+
+        reviews.forEach((review, index) => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>F${String(index + 1).padStart(3, "0")}</td>
+                <td>Passenger ${review.passenger_id}</td>
+                <td>Trip ${review.trip_id}</td>
+                <td>${review.rating} / 5</td>
+                <td>${review.review_date}</td>
+                <td>${review.comment}</td>
+                <td class="actions">
+                    <button class="btn" onclick="editRow()">Edit</button>
+                    <button class="btn danger" onclick="deleteRow(this)">Delete</button>
+                </td>
+            `;
+
+            dataRows.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error loading MongoDB reviews:", error);
+
+        dataRows.innerHTML = `
+            <tr>
+                <td colspan="7">Unable to load feedback from MongoDB.</td>
+            </tr>
+        `;
+    }
+}
+
+loadMongoReviews();
+</script>
+
+</body>
+</html>
