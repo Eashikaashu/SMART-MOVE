@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartMove Transport Solutions - Dashboard</title>
+  <link rel="stylesheet" href="vehicle_style.css" />
+</head>
+<body>
+
+  <!-- Button that shows the sidebar on small screens -->
+  <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle menu">☰</button>
+
+  <!-- Dark overlay behind the sidebar on mobile -->
+  <div id="overlay" class="overlay"></div>
+
+  <div class="app-layout">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🚐</span>
+        <span class="brand-name">SmartMove</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="Dashboard">
+          <span class="nav-icon">▦</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" data-page="Vehicles">
+          <span class="nav-icon">🚚</span> Vehicles
+        </a>
+        <a href="#" class="nav-item" data-page="Drivers">
+          <span class="nav-icon">🧑‍✈️</span> Drivers
+        </a>
+        <a href="#" class="nav-item" data-page="Routes">
+          <span class="nav-icon">🛣️</span> Routes
+        </a>
+        <a href="#" class="nav-item" data-page="Passengers">
+          <span class="nav-icon">👥</span> Passengers
+        </a>
+        <a href="#" class="nav-item" data-page="Trips">
+          <span class="nav-icon">🧭</span> Trips
+        </a>
+        <a href="#" class="nav-item" data-page="Bookings">
+          <span class="nav-icon">📖</span> Bookings
+        </a>
+        <a href="#" class="nav-item" data-page="Payments">
+          <span class="nav-icon">💳</span> Payments
+        </a>
+        <a href="#" class="nav-item" data-page="Maintenance">
+          <span class="nav-icon">🛠️</span> Maintenance
+        </a>
+        <a href="#" class="nav-item" data-page="Feedback">
+          <span class="nav-icon">💬</span> Feedback
+        </a>
+        <a href="#" class="nav-item" data-page="Reports">
+          <span class="nav-icon">📊</span> Reports
+        </a>
+        <a href="#" class="nav-item" data-page="Settings">
+          <span class="nav-icon">⚙️</span> Settings
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ===================== MAIN AREA ===================== -->
+    <div class="main-area">
+
+      <!-- ---------- TOP BAR ---------- -->
+      <header class="topbar">
+        <h1 id="pageTitle" class="page-title">Dashboard</h1>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search vehicles, drivers, trips..." />
+          </div>
+
+          <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+            🔔
+            <span class="notif-dot"></span>
+          </button>
+
+          <div class="user-profile">
+            <div class="user-avatar">EA</div>
+            <div class="user-info">
+              <span class="user-name">Eashika</span>
+              <span class="user-role">Fleet Administrator</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ---------- PAGE CONTENT ---------- -->
+      <main class="content">
+
+        <p class="datetime-line" id="dateTimeLine"></p>
+
+        <!-- ===================== DASHBOARD PAGE ===================== -->
+        <div id="page-Dashboard" class="page-section active">
+
+          <!-- Summary cards -->
+          <section class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon icon-blue">🚚</div>
+              <div class="stat-info">
+                <span class="stat-label">Total Vehicles</span>
+                <span class="stat-value" id="statTotalVehicles">0</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-green">✅</div>
+              <div class="stat-info">
+                <span class="stat-label">Active Vehicles</span>
+                <span class="stat-value" id="statActiveVehicles">0</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-purple">🧑‍✈️</div>
+              <div class="stat-info">
+                <span class="stat-label">Total Drivers</span>
+                <span class="stat-value" id="statTotalDrivers">0</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-orange">🧭</div>
+              <div class="stat-info">
+                <span class="stat-label">Active Trips</span>
+                <span class="stat-value" id="statActiveTrips">0</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-teal">📖</div>
+              <div class="stat-info">
+                <span class="stat-label">Today's Bookings</span>
+                <span class="stat-value" id="statTodayBookings">0</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon icon-gold">💰</div>
+              <div class="stat-info">
+                <span class="stat-label">Monthly Revenue</span>
+                <span class="stat-value" id="statMonthlyRevenue">Rs. 0</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Two-column dashboard sections -->
+          <section class="dashboard-grid">
+
+            <!-- Recent Trips -->
+            <div class="panel panel-wide">
+              <div class="panel-header">
+                <h2>Recent Trips</h2>
+                <button class="link-btn">View all</button>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Trip ID</th>
+                      <th>Route</th>
+                      <th>Driver</th>
+                      <th>Vehicle</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentTripsBody">
+                    <!-- Filled by dashboard.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Fleet Status -->
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Fleet Status</h2>
+              </div>
+              <div class="fleet-status-list" id="fleetStatusList">
+                <!-- Filled by dashboard.js -->
+              </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="panel panel-wide">
+              <div class="panel-header">
+                <h2>Recent Bookings</h2>
+                <button class="link-btn">View all</button>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Passenger</th>
+                      <th>Route</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentBookingsBody">
+                    <!-- Filled by dashboard.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Recent Feedback -->
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Recent Customer Feedback</h2>
+              </div>
+              <div class="feedback-list" id="feedbackList">
+                <!-- Filled by dashboard.js -->
+              </div>
+            </div>
+
+          </section>
+
+        </div>
+        <!-- ===================== END DASHBOARD PAGE ===================== -->
+
+        <!-- ===================== VEHICLES PAGE ===================== -->
+        <div id="page-Vehicles" class="page-section">
+
+          <!-- Page header -->
+          <div class="page-header">
+            <div>
+              <h2 class="page-heading">Vehicles</h2>
+              <p class="page-subheading">Manage and monitor your transport fleet</p>
+            </div>
+            <button class="btn btn-primary" id="openAddVehicleBtn">+ Add Vehicle</button>
+          </div>
+
+          <!-- Summary cards -->
+          <section class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon icon-blue">🚚</div>
+              <div class="stat-info">
+                <span class="stat-label">Total Vehicles</span>
+                <span class="stat-value" id="vehTotalCount">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-green">✅</div>
+              <div class="stat-info">
+                <span class="stat-label">Available</span>
+                <span class="stat-value" id="vehAvailableCount">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-blue">🧭</div>
+              <div class="stat-info">
+                <span class="stat-label">In Service</span>
+                <span class="stat-value" id="vehInServiceCount">0</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-orange">🛠️</div>
+              <div class="stat-info">
+                <span class="stat-label">Under Maintenance</span>
+                <span class="stat-value" id="vehMaintenanceCount">0</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Search and filter -->
+          <div class="panel filter-bar">
+            <div class="search-box filter-search">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="vehicleSearchInput" placeholder="Search by Vehicle ID, registration number or model..." />
+            </div>
+
+            <select id="vehicleTypeFilter" class="filter-select">
+              <option value="">All Types</option>
+              <option value="Bus">Bus</option>
+              <option value="Van">Van</option>
+              <option value="Car">Car</option>
+              <option value="Lorry">Lorry</option>
+            </select>
+
+            <select id="vehicleStatusFilter" class="filter-select">
+              <option value="">All Statuses</option>
+              <option value="Available">Available</option>
+              <option value="In Service">In Service</option>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
+
+          <!-- Vehicle table -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Vehicle List</h2>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Vehicle ID</th>
+                    <th>Registration No.</th>
+                    <th>Type</th>
+                    <th>Model</th>
+                    <th>Capacity</th>
+                    <th>Fuel Type</th>
+                    <th>Status</th>
+                    <th>Assigned Driver</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="vehicleTableBody">
+                  <!-- Filled by vehicles.js -->
+                </tbody>
+              </table>
+            </div>
+            <p class="empty-state" id="vehicleEmptyState" style="display:none;">No vehicles match your search/filter.</p>
+          </div>
+
+        </div>
+        <!-- ===================== END VEHICLES PAGE ===================== -->
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================== ADD / EDIT VEHICLE MODAL ===================== -->
+  <div id="vehicleModalOverlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="vehicleModalTitle">Add Vehicle</h2>
+        <button class="modal-close" id="closeVehicleModalBtn" aria-label="Close">✕</button>
+      </div>
+
+      <form id="vehicleForm" class="modal-form">
+        <!-- Hidden field used to know whether we are adding or editing -->
+        <input type="hidden" id="vehicleEditingId" value="" />
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="fieldVehicleId">Vehicle ID</label>
+            <input type="text" id="fieldVehicleId" placeholder="e.g. VEH-009" required />
+          </div>
+
+          <div class="form-field">
+            <label for="fieldRegNumber">Registration Number</label>
+            <input type="text" id="fieldRegNumber" placeholder="e.g. WP-CAB-1234" required />
+          </div>
+
+          <div class="form-field">
+            <label for="fieldVehicleType">Vehicle Type</label>
+            <select id="fieldVehicleType" required>
+              <option value="Bus">Bus</option>
+              <option value="Van">Van</option>
+              <option value="Car">Car</option>
+              <option value="Lorry">Lorry</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="fieldModel">Model</label>
+            <input type="text" id="fieldModel" placeholder="e.g. Toyota Coaster" required />
+          </div>
+
+          <div class="form-field">
+            <label for="fieldManufacturer">Manufacturer</label>
+            <input type="text" id="fieldManufacturer" placeholder="e.g. Toyota" required />
+          </div>
+
+          <div class="form-field">
+            <label for="fieldYear">Year</label>
+            <input type="number" id="fieldYear" placeholder="e.g. 2022" min="1990" max="2030" required />
+          </div>
+
+          <div class="form-field">
+            <label for="fieldCapacity">Capacity (seats)</label>
+            <input type="number" id="fieldCapacity" placeholder="e.g. 26" min="1" required />
+          </div>
+
+          <div class="form-field">
+            <label for="fieldFuelType">Fuel Type</label>
+            <select id="fieldFuelType" required>
+              <option value="Diesel">Diesel</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Electric">Electric</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="fieldStatus">Status</label>
+            <select id="fieldStatus" required>
+              <option value="Available">Available</option>
+              <option value="In Service">In Service</option>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="fieldAssignedDriver">Assigned Driver</label>
+            <input type="text" id="fieldAssignedDriver" placeholder="e.g. S. Perera (or leave blank)" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelVehicleModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveVehicleBtn">Save Vehicle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/vehicles.js"></script>
+</body>
+</html>
