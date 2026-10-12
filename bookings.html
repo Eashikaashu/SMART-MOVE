@@ -1,1 +1,354 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Bookings</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="active" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Bookings</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Bookings</h2><p>Manage passenger ticket reservations.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search bookings..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Booking ID</th><th>Passenger</th><th>Trip</th><th>Seat</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>BK001</td><td>Nimal Perera</td><td>TRP001</td><td>12</td><td>Rs. 1,500</td><td><span class='status ok'>Confirmed</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>BK002</td><td>Sarah Fernando</td><td>TRP001</td><td>13</td><td>Rs. 1,500</td><td><span class='status ok'>Confirmed</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>BK003</td><td>Kasun Silva</td><td>TRP002</td><td>08</td><td>Rs. 1,800</td><td><span class='status warn'>Pending</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>BK004</td><td>Ayesha Kumar</td><td>TRP003</td><td>21</td><td>Rs. 1,500</td><td><span class='status bad'>Cancelled</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Booking</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Booking ID<input></label><label>Passenger<input></label><label>Trip ID<input></label><label>Seat Number<input></label><label>Amount<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartMove - Bookings</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div>
+          SMARTMOVE
+          <small>Transport Management System</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="vehicles.html">Vehicles</a>
+        <a href="drivers.html">Drivers</a>
+        <a href="routes.html">Routes</a>
+        <a href="passengers.html">Passengers</a>
+        <a href="trips.html">Trips</a>
+        <a class="active" href="bookings.html">Bookings</a>
+        <a href="payments.html">Payments</a>
+        <a href="maintenance.html">Maintenance</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="reports.html">Reports</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="menu" onclick="toggleMenu()">☰</button>
+          <h1>Bookings</h1>
+        </div>
+        <div class="user">Management Portal | Administrator</div>
+      </header>
+
+      <section class="content">
+        <div class="intro">
+          <h2>Bookings</h2>
+          <p>Manage passenger ticket reservations.</p>
+        </div>
+
+        <div class="toolbar">
+          <input
+            id="search"
+            oninput="searchTable()"
+            placeholder="Search bookings..."
+          >
+          <button class="btn primary" onclick="openAddModal()">
+            + Add
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Passenger ID</th>
+                  <th>Trip ID</th>
+                  <th>Booking Date</th>
+                  <th>Seat Number</th>
+                  <th>Fare (Rs.)</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows">
+                <tr><td colspan="8">Loading bookings...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal" id="modal">
+          <div class="modalbox">
+            <div class="modalhead">
+              <h3 id="modalTitle">Add Booking</h3>
+              <button class="close" onclick="closeBookingModal()">×</button>
+            </div>
+
+            <form id="bookingForm" onsubmit="saveBooking(event)">
+              <div class="form">
+                <label>
+                  Booking ID
+                  <input id="bookingId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Passenger ID
+                  <input id="passengerId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Trip ID
+                  <input id="tripId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Booking Date
+                  <input id="bookingDate" type="date" required>
+                </label>
+
+                <label>
+                  Seat Number
+                  <input id="seatNo" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Fare (Rs.)
+                  <input id="fare" type="number" min="0" step="0.01" required>
+                </label>
+
+                <label>
+                  Status
+                  <select id="bookingStatus" required>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="modalfoot">
+                <button
+                  class="btn"
+                  type="button"
+                  onclick="closeBookingModal()"
+                >Cancel</button>
+                <button class="btn primary" type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const BOOKINGS_API = "http://localhost:3000/api/bookings";
+    let editingBookingId = null;
+
+    function formatBookingDate(value) {
+      if (!value) return "";
+
+      const text = String(value);
+      const match = text.match(/^(\d{4}-\d{2}-\d{2})/);
+
+      if (match) return match[1];
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return text;
+
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    async function loadBookings() {
+      const tbody = document.getElementById("dataRows");
+
+      try {
+        const response = await fetch(BOOKINGS_API);
+        const bookings = await response.json();
+
+        if (!response.ok) {
+          throw new Error(bookings.error || "Unable to load bookings.");
+        }
+
+        tbody.innerHTML = "";
+
+        if (bookings.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="8">No bookings found.</td></tr>';
+          return;
+        }
+
+        bookings.forEach(booking => {
+          const row = document.createElement("tr");
+
+          const values = [
+            booking.BOOKING_ID,
+            booking.PASSENGER_ID,
+            booking.TRIP_ID,
+            formatBookingDate(booking.BOOKING_DATE),
+            booking.SEAT_NO,
+            booking.FARE,
+            booking.STATUS
+          ];
+
+          values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "";
+            row.appendChild(cell);
+          });
+
+          const actions = document.createElement("td");
+          actions.className = "actions";
+
+          const editButton = document.createElement("button");
+          editButton.className = "btn";
+          editButton.textContent = "Edit";
+          editButton.addEventListener(
+            "click",
+            () => editBooking(booking)
+          );
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn danger";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener(
+            "click",
+            () => deleteBooking(booking)
+          );
+
+          actions.append(editButton, deleteButton);
+          row.appendChild(actions);
+          tbody.appendChild(row);
+        });
+
+        searchTable();
+
+      } catch (error) {
+        console.error("Error loading bookings:", error);
+        tbody.innerHTML =
+          '<tr><td colspan="8">Unable to load bookings. Check the backend server.</td></tr>';
+      }
+    }
+
+    function openAddModal() {
+      editingBookingId = null;
+      document.getElementById("bookingForm").reset();
+      document.getElementById("bookingId").disabled = false;
+      document.getElementById("modalTitle").textContent = "Add Booking";
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function editBooking(booking) {
+      editingBookingId = booking.BOOKING_ID;
+
+      document.getElementById("bookingId").value = booking.BOOKING_ID;
+      document.getElementById("passengerId").value = booking.PASSENGER_ID;
+      document.getElementById("tripId").value = booking.TRIP_ID;
+      document.getElementById("bookingDate").value =
+        formatBookingDate(booking.BOOKING_DATE);
+      document.getElementById("seatNo").value = booking.SEAT_NO;
+      document.getElementById("fare").value = booking.FARE;
+      document.getElementById("bookingStatus").value = booking.STATUS;
+
+      document.getElementById("bookingId").disabled = true;
+      document.getElementById("modalTitle").textContent = "Edit Booking";
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function closeBookingModal() {
+      document.getElementById("modal").classList.remove("show");
+      document.getElementById("bookingForm").reset();
+      document.getElementById("bookingId").disabled = false;
+      editingBookingId = null;
+    }
+
+    async function saveBooking(event) {
+      event.preventDefault();
+
+      const isEditing = editingBookingId !== null;
+
+      const booking = {
+        booking_id: Number(document.getElementById("bookingId").value),
+        passenger_id: Number(document.getElementById("passengerId").value),
+        trip_id: Number(document.getElementById("tripId").value),
+        booking_date: document.getElementById("bookingDate").value,
+        seat_no: Number(document.getElementById("seatNo").value),
+        fare: Number(document.getElementById("fare").value),
+        status: document.getElementById("bookingStatus").value
+      };
+
+      const url = isEditing
+        ? `${BOOKINGS_API}/${editingBookingId}`
+        : BOOKINGS_API;
+
+      try {
+        const response = await fetch(url, {
+          method: isEditing ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(booking)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to save booking.");
+        }
+
+        alert(result.message || "Booking saved successfully.");
+        closeBookingModal();
+        await loadBookings();
+
+      } catch (error) {
+        console.error("Error saving booking:", error);
+        alert(error.message);
+      }
+    }
+
+    async function deleteBooking(booking) {
+      if (!confirm(`Delete Booking ${booking.BOOKING_ID}?`)) return;
+
+      try {
+        const response = await fetch(
+          `${BOOKINGS_API}/${booking.BOOKING_ID}`,
+          { method: "DELETE" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to delete booking.");
+        }
+
+        alert(result.message || "Booking deleted successfully.");
+        await loadBookings();
+
+      } catch (error) {
+        console.error("Error deleting booking:", error);
+        alert(error.message);
+      }
+    }
+
+    function searchTable() {
+      const query = document.getElementById("search")
+        .value.toLowerCase().trim();
+
+      document.querySelectorAll("#dataRows tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query)
+          ? ""
+          : "none";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadBookings);
+  </script>
+</body>
+</html>
