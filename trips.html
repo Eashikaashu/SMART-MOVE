@@ -1,1 +1,372 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Trips</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="active" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Trips</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Trips</h2><p>Schedule and monitor transport trips.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search trips..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Trip ID</th><th>Route</th><th>Vehicle</th><th>Driver</th><th>Departure</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>TRP001</td><td>Colombo - Kandy</td><td>WP CAB-1234</td><td>Kasun Perera</td><td>08:30</td><td><span class='status ok'>Completed</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>TRP002</td><td>Colombo - Galle</td><td>WP CAA-4521</td><td>Nimal Silva</td><td>09:15</td><td><span class='status info'>Running</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>TRP003</td><td>Kandy - Colombo</td><td>CP BAA-7788</td><td>Ruwan Fernando</td><td>10:00</td><td><span class='status warn'>Scheduled</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>TRP004</td><td>Colombo - Negombo</td><td>WP CAB-8899</td><td>Amal Jayasuriya</td><td>11:30</td><td><span class='status warn'>Scheduled</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Trip</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Trip ID<input></label><label>Route<input></label><label>Vehicle<input></label><label>Driver<input></label><label>Departure Time<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartMove - Trips</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div>
+          SMARTMOVE
+          <small>Transport Management System</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="vehicles.html">Vehicles</a>
+        <a href="drivers.html">Drivers</a>
+        <a href="routes.html">Routes</a>
+        <a href="passengers.html">Passengers</a>
+        <a class="active" href="trips.html">Trips</a>
+        <a href="bookings.html">Bookings</a>
+        <a href="payments.html">Payments</a>
+        <a href="maintenance.html">Maintenance</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="reports.html">Reports</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="menu" onclick="toggleMenu()">☰</button>
+          <h1>Trips</h1>
+        </div>
+        <div class="user">Management Portal | Administrator</div>
+      </header>
+
+      <section class="content">
+        <div class="intro">
+          <h2>Trips</h2>
+          <p>Schedule and monitor transport trips.</p>
+        </div>
+
+        <div class="toolbar">
+          <input
+            id="search"
+            oninput="searchTable()"
+            placeholder="Search trips..."
+          >
+          <button class="btn primary" onclick="openAddModal()">
+            + Add
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Trip ID</th>
+                  <th>Route ID</th>
+                  <th>Vehicle ID</th>
+                  <th>Driver ID</th>
+                  <th>Trip Date</th>
+                  <th>Departure</th>
+                  <th>Arrival</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows">
+                <tr><td colspan="9">Loading trips...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal" id="modal">
+          <div class="modalbox">
+            <div class="modalhead">
+              <h3 id="modalTitle">Add Trip</h3>
+              <button class="close" onclick="closeTripModal()">×</button>
+            </div>
+
+            <form id="tripForm" onsubmit="saveTrip(event)">
+              <div class="form">
+                <label>
+                  Trip ID
+                  <input id="tripId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Route ID
+                  <input id="routeId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Vehicle ID
+                  <input id="vehicleId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Driver ID
+                  <input id="driverId" type="number" min="1" required>
+                </label>
+
+                <label>
+                  Trip Date
+                  <input id="tripDate" type="date" required>
+                </label>
+
+                <label>
+                  Departure Time
+                  <input id="departureTime" type="time" required>
+                </label>
+
+                <label>
+                  Arrival Time
+                  <input id="arrivalTime" type="time" required>
+                </label>
+
+                <label>
+                  Status
+                  <select id="tripStatus" required>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Running">Running</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="modalfoot">
+                <button
+                  class="btn"
+                  type="button"
+                  onclick="closeTripModal()"
+                >Cancel</button>
+                <button class="btn primary" type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const TRIPS_API = "http://localhost:3000/api/trips";
+    let editingTripId = null;
+
+    function formatDate(value) {
+      if (!value) return "";
+
+      const text = String(value);
+      const match = text.match(/^(\d{4}-\d{2}-\d{2})/);
+
+      if (match) return match[1];
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return text;
+
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function formatTime(value) {
+      if (!value) return "";
+
+      const text = String(value);
+      const match = text.match(/(\d{1,2})\.(\d{2})\./);
+
+      if (match) {
+        return `${match[1].padStart(2, "0")}:${match[2]}`;
+      }
+
+      const timeMatch = text.match(/^(\d{2}):(\d{2})/);
+      if (timeMatch) return `${timeMatch[1]}:${timeMatch[2]}`;
+
+      return text;
+    }
+
+    async function loadTrips() {
+      const tbody = document.getElementById("dataRows");
+
+      try {
+        const response = await fetch(TRIPS_API);
+        const trips = await response.json();
+
+        if (!response.ok) {
+          throw new Error(trips.error || "Unable to load trips.");
+        }
+
+        tbody.innerHTML = "";
+
+        if (trips.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="9">No trips found.</td></tr>';
+          return;
+        }
+
+        trips.forEach(trip => {
+          const row = document.createElement("tr");
+
+          const values = [
+            trip.TRIP_ID,
+            trip.ROUTE_ID,
+            trip.VEHICLE_ID,
+            trip.DRIVER_ID,
+            formatDate(trip.TRIP_DATE),
+            formatTime(trip.DEPARTURE_TIME),
+            formatTime(trip.ARRIVAL_TIME),
+            trip.STATUS
+          ];
+
+          values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "";
+            row.appendChild(cell);
+          });
+
+          const actions = document.createElement("td");
+          actions.className = "actions";
+
+          const editButton = document.createElement("button");
+          editButton.className = "btn";
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => editTrip(trip));
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn danger";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => deleteTrip(trip));
+
+          actions.append(editButton, deleteButton);
+          row.appendChild(actions);
+          tbody.appendChild(row);
+        });
+
+        searchTable();
+      } catch (error) {
+        console.error("Error loading trips:", error);
+        tbody.innerHTML =
+          '<tr><td colspan="9">Unable to load trips. Check the backend server.</td></tr>';
+      }
+    }
+
+    function openAddModal() {
+      editingTripId = null;
+      document.getElementById("tripForm").reset();
+      document.getElementById("tripId").disabled = false;
+      document.getElementById("modalTitle").textContent = "Add Trip";
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function editTrip(trip) {
+      editingTripId = trip.TRIP_ID;
+
+      document.getElementById("tripId").value = trip.TRIP_ID;
+      document.getElementById("routeId").value = trip.ROUTE_ID;
+      document.getElementById("vehicleId").value = trip.VEHICLE_ID;
+      document.getElementById("driverId").value = trip.DRIVER_ID;
+      document.getElementById("tripDate").value = formatDate(trip.TRIP_DATE);
+      document.getElementById("departureTime").value =
+        formatTime(trip.DEPARTURE_TIME);
+      document.getElementById("arrivalTime").value =
+        formatTime(trip.ARRIVAL_TIME);
+      document.getElementById("tripStatus").value = trip.STATUS;
+
+      document.getElementById("tripId").disabled = true;
+      document.getElementById("modalTitle").textContent = "Edit Trip";
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function closeTripModal() {
+      document.getElementById("modal").classList.remove("show");
+      document.getElementById("tripForm").reset();
+      document.getElementById("tripId").disabled = false;
+      editingTripId = null;
+    }
+
+    async function saveTrip(event) {
+      event.preventDefault();
+
+      const isEditing = editingTripId !== null;
+
+      const trip = {
+        trip_id: Number(document.getElementById("tripId").value),
+        route_id: Number(document.getElementById("routeId").value),
+        vehicle_id: Number(document.getElementById("vehicleId").value),
+        driver_id: Number(document.getElementById("driverId").value),
+        trip_date: document.getElementById("tripDate").value,
+        departure_time: document.getElementById("departureTime").value,
+        arrival_time: document.getElementById("arrivalTime").value,
+        status: document.getElementById("tripStatus").value
+      };
+
+      const url = isEditing
+        ? `${TRIPS_API}/${editingTripId}`
+        : TRIPS_API;
+
+      try {
+        const response = await fetch(url, {
+          method: isEditing ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(trip)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to save trip.");
+        }
+
+        alert(result.message || "Trip saved successfully.");
+        closeTripModal();
+        await loadTrips();
+      } catch (error) {
+        console.error("Error saving trip:", error);
+        alert(error.message);
+      }
+    }
+
+    async function deleteTrip(trip) {
+      if (!confirm(`Delete Trip ${trip.TRIP_ID}?`)) return;
+
+      try {
+        const response = await fetch(
+          `${TRIPS_API}/${trip.TRIP_ID}`,
+          { method: "DELETE" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to delete trip.");
+        }
+
+        alert(result.message || "Trip deleted successfully.");
+        await loadTrips();
+      } catch (error) {
+        console.error("Error deleting trip:", error);
+        alert(error.message);
+      }
+    }
+
+    function searchTable() {
+      const query = document.getElementById("search")
+        .value.toLowerCase().trim();
+
+      document.querySelectorAll("#dataRows tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query)
+          ? ""
+          : "none";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadTrips);
+  </script>
+</body>
+</html>
