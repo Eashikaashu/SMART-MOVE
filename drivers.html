@@ -1,1 +1,417 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Drivers</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="active" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Drivers</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Drivers</h2><p>Manage drivers, licence information and assignments.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search drivers..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Driver ID</th><th>Name</th><th>License No.</th><th>Phone</th><th>Vehicle</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>D001</td><td>Kasun Perera</td><td>B1234567</td><td>0771234567</td><td>WP CAB-1234</td><td><span class='status ok'>Available</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>D002</td><td>Nimal Silva</td><td>B2345678</td><td>0712345678</td><td>WP CAA-4521</td><td><span class='status info'>On Trip</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>D003</td><td>Ruwan Fernando</td><td>B3456789</td><td>0763456789</td><td>CP BAA-7788</td><td><span class='status warn'>Off Duty</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>D004</td><td>Amal Jayasuriya</td><td>B4567890</td><td>0754567890</td><td>WP CAB-8899</td><td><span class='status ok'>Available</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Driver</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Driver ID<input></label><label>Name<input></label><label>License Number<input></label><label>Phone<input></label><label>Assigned Vehicle<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SmartMove - Drivers</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="side" id="side">
+        <div class="brand">
+            <div>
+                SMARTMOVE
+                <small>Transport Management System</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="vehicles.html">Vehicles</a>
+            <a class="active" href="drivers.html">Drivers</a>
+            <a href="routes.html">Routes</a>
+            <a href="passengers.html">Passengers</a>
+            <a href="trips.html">Trips</a>
+            <a href="bookings.html">Bookings</a>
+            <a href="payments.html">Payments</a>
+            <a href="maintenance.html">Maintenance</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="reports.html">Reports</a>
+            <a href="settings.html">Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+
+        <header class="top">
+            <div style="display:flex;align-items:center;gap:12px">
+                <button class="menu" onclick="toggleMenu()">☰</button>
+                <h1>Drivers</h1>
+            </div>
+            <div class="user">Management Portal | Administrator</div>
+        </header>
+
+        <section class="content">
+
+            <div class="intro">
+                <h2>Drivers</h2>
+                <p>Manage drivers, licence information and assignments.</p>
+            </div>
+
+            <div class="toolbar">
+                <input
+                    id="search"
+                    oninput="searchTable()"
+                    placeholder="Search drivers..."
+                >
+                <button class="btn primary" onclick="openAddModal()">
+                    + Add
+                </button>
+            </div>
+
+            <div class="panel">
+                <div class="tablewrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Driver ID</th>
+                                <th>Name</th>
+                                <th>License No.</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="dataRows">
+                            <tr>
+                                <td colspan="7">Loading drivers...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Driver Modal -->
+            <div class="modal" id="modal">
+                <div class="modalbox">
+
+                    <div class="modalhead">
+                        <h3 id="modalTitle">Add Driver</h3>
+                        <button class="close" onclick="closeModal()">×</button>
+                    </div>
+
+                    <div class="form">
+
+                        <label>
+                            Driver ID
+                            <input id="driverId" type="number" min="1" required>
+                        </label>
+
+                        <label>
+                            Name
+                            <input id="driverName" required>
+                        </label>
+
+                        <label>
+                            License Number
+                            <input id="licenseNo" required>
+                        </label>
+
+                        <label>
+                            Phone
+                            <input id="driverPhone" type="tel" required>
+                        </label>
+
+                        <label>
+                            Email
+                            <input id="driverEmail" type="email" required>
+                        </label>
+
+                        <label>
+                            Status
+                            <select id="driverStatus">
+                                <option value="Active">Active</option>
+                                <option value="On Leave">On Leave</option>
+                            </select>
+                        </label>
+
+                    </div>
+
+                    <div class="modalfoot">
+                        <button class="btn" onclick="closeModal()">Cancel</button>
+
+                        <button
+                            class="btn primary"
+                            id="saveButton"
+                            onclick="saveRecord()"
+                        >
+                            Save
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script src="js/app.js"></script>
+
+<script>
+    const API_URL = "http://localhost:3000/api/drivers";
+
+    let editingDriverId = null;
+
+    // Load drivers from Oracle through the backend.
+    async function loadDrivers() {
+        const tbody = document.getElementById("dataRows");
+
+        tbody.innerHTML =
+            '<tr><td colspan="7">Loading drivers...</td></tr>';
+
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Unable to load drivers from Oracle.");
+            }
+
+            const drivers = await response.json();
+
+            tbody.replaceChildren();
+
+            if (drivers.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="7">No drivers found.</td></tr>';
+                return;
+            }
+
+            drivers.forEach(driver => {
+                const row = document.createElement("tr");
+
+                const values = [
+                    driver.DRIVER_ID,
+                    driver.DRIVER_NAME,
+                    driver.LICENSE_NO,
+                    driver.PHONE,
+                    driver.EMAIL,
+                    driver.STATUS
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value ?? "";
+                    row.appendChild(cell);
+                });
+
+                const actions = document.createElement("td");
+                actions.className = "actions";
+
+                const editButton = document.createElement("button");
+                editButton.className = "btn";
+                editButton.textContent = "Edit";
+                editButton.onclick = () => editDriver(driver);
+
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "btn danger";
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = () => deleteDriver(driver);
+
+                actions.append(editButton, deleteButton);
+                row.appendChild(actions);
+                tbody.appendChild(row);
+            });
+
+            searchTable();
+
+        } catch (error) {
+            console.error("Driver loading error:", error);
+
+            tbody.innerHTML =
+                '<tr><td colspan="7">Unable to load drivers. Check the backend connection.</td></tr>';
+        }
+    }
+
+    // Search drivers.
+    function searchTable() {
+        const query = document
+            .getElementById("search")
+            .value.toLowerCase();
+
+        document.querySelectorAll("#dataRows tr").forEach(row => {
+            row.style.display = row.textContent
+                .toLowerCase()
+                .includes(query) ? "" : "none";
+        });
+    }
+
+    // Open the form for a new driver.
+    function openAddModal() {
+        editingDriverId = null;
+
+        document.getElementById("modalTitle").textContent = "Add Driver";
+        document.getElementById("saveButton").textContent = "Save";
+
+        document.getElementById("driverId").disabled = false;
+
+        clearForm();
+        openModal();
+    }
+
+    // Open the existing modal.
+    function openModal() {
+        document.getElementById("modal").classList.add("show");
+    }
+
+    function closeModal() {
+        document.getElementById("modal").classList.remove("show");
+    }
+
+    function clearForm() {
+        document.getElementById("driverId").value = "";
+        document.getElementById("driverName").value = "";
+        document.getElementById("licenseNo").value = "";
+        document.getElementById("driverPhone").value = "";
+        document.getElementById("driverEmail").value = "";
+        document.getElementById("driverStatus").value = "Active";
+    }
+
+    // Save a new driver to Oracle.
+    
+async function saveRecord() {
+    const driver = {
+        driver_id: document.getElementById("driverId").value,
+        driver_name: document.getElementById("driverName").value.trim(),
+        license_no: document.getElementById("licenseNo").value.trim(),
+        phone: document.getElementById("driverPhone").value.trim(),
+        email: document.getElementById("driverEmail").value.trim(),
+        status: document.getElementById("driverStatus").value
+    };
+
+    if (
+        !driver.driver_id ||
+        !Number.isInteger(Number(driver.driver_id)) ||
+        Number(driver.driver_id) <= 0 ||
+        !driver.driver_name ||
+        !driver.license_no ||
+        !driver.phone ||
+        !driver.email
+    ) {
+        alert("Please enter a valid Driver ID and fill in all fields.");
+        return;
+    }
+
+    const saveButton = document.getElementById("saveButton");
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+        const isEditing = editingDriverId !== null;
+
+        const url = isEditing
+            ? `${API_URL}/${editingDriverId}`
+            : API_URL;
+
+        const response = await fetch(url, {
+            method: isEditing ? "PUT" : "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(driver)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.error || "Unable to save the driver."
+            );
+        }
+
+        alert(
+            result.message ||
+            (isEditing
+                ? "Driver updated successfully!"
+                : "Driver added successfully!")
+        );
+
+        closeModal();
+        clearForm();
+        editingDriverId = null;
+
+        document.querySelector("#modal h3").textContent = "Add Driver";
+
+        await loadDrivers();
+
+    } catch (error) {
+        console.error("Save driver error:", error);
+        alert(error.message);
+
+    } finally {
+        saveButton.disabled = false;
+        saveButton.textContent =
+            editingDriverId !== null ? "Update" : "Save";
+    }
+}
+
+
+    // Editing 
+    function editDriver(driver) {
+        editingDriverId = driver.DRIVER_ID;
+        document.getElementById("driverId").value = driver.DRIVER_ID;
+    document.getElementById("driverName").value = driver.DRIVER_NAME;
+    document.getElementById("licenseNo").value = driver.LICENSE_NO;
+    document.getElementById("driverPhone").value = driver.PHONE;
+    document.getElementById("driverEmail").value = driver.EMAIL;
+    document.getElementById("driverStatus").value = driver.STATUS;
+
+    document.querySelector("#modal h3").textContent = "Edit Driver";
+    openModal();
+    }
+
+    // Deletion 
+    
+async function deleteDriver(driver) {
+    const confirmed = confirm(
+        `Are you sure you want to delete driver ${driver.DRIVER_NAME} (ID: ${driver.DRIVER_ID})?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(
+            `${API_URL}/${driver.DRIVER_ID}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.error || "Unable to delete driver."
+            );
+        }
+
+        alert(result.message || "Driver deleted successfully.");
+
+        await loadDrivers();
+
+    } catch (error) {
+        console.error("Delete driver error:", error);
+        alert(error.message);
+    }
+}
+
+
+    // Close modal when clicking outside the form.
+    document.addEventListener("click", event => {
+        if (event.target.id === "modal") {
+            closeModal();
+        }
+    });
+
+    // Load data when the page opens.
+    loadDrivers();
+</script>
+
+</body>
+</html>
