@@ -1,147 +1,271 @@
+
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SmartMove - Feedback</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartMove - Feedback</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="layout">
-<aside class="side" id="side">
-<div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div>
-<nav class="nav">
-<a href="dashboard.html">Dashboard</a>
-<a href="vehicles.html">Vehicles</a>
-<a href="drivers.html">Drivers</a>
-<a href="routes.html">Routes</a>
-<a href="passengers.html">Passengers</a>
-<a href="trips.html">Trips</a>
-<a href="bookings.html">Bookings</a>
-<a href="payments.html">Payments</a>
-<a href="maintenance.html">Maintenance</a>
-<a class="active" href="feedback.html">Feedback</a>
-<a href="reports.html">Reports</a>
-<a href="settings.html">Settings</a>
-</nav>
-</aside>
+  <aside class="side" id="side">
+    <div class="brand">
+      <div>SMARTMOVE<small>Transport Management System</small></div>
+    </div>
+    <nav class="nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="vehicles.html">Vehicles</a>
+      <a href="drivers.html">Drivers</a>
+      <a href="routes.html">Routes</a>
+      <a href="passengers.html">Passengers</a>
+      <a href="trips.html">Trips</a>
+      <a href="bookings.html">Bookings</a>
+      <a href="payments.html">Payments</a>
+      <a href="maintenance.html">Maintenance</a>
+      <a class="active" href="feedback.html">Feedback</a>
+      <a href="reports.html">Reports</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+  </aside>
 
-<main class="main">
-<header class="top">
-<div style="display:flex;align-items:center;gap:12px">
-<button class="menu" onclick="toggleMenu()">☰</button>
-<h1>Feedback</h1>
-</div>
-<div class="user">Management Portal | Administrator</div>
-</header>
+  <main class="main">
+    <header class="top">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu" onclick="toggleMenu()">☰</button>
+        <h1>Feedback</h1>
+      </div>
+      <div class="user">Management Portal | Administrator</div>
+    </header>
 
-<section class="content">
-<div class="intro">
-<h2>Feedback</h2>
-<p>Review passenger comments and service ratings.</p>
-</div>
+    <section class="content">
+      <div class="intro">
+        <h2>Feedback</h2>
+        <p>Review passenger comments and service ratings.</p>
+      </div>
 
-<div class="toolbar">
-<input id="search" oninput="searchTable()" placeholder="Search feedback...">
-<button class="btn primary" onclick="openModal()">+ Add</button>
-</div>
+      <div class="toolbar">
+        <input id="search" oninput="searchTable()" placeholder="Search feedback...">
+        <button class="btn primary" onclick="openModal()">+ Add Feedback</button>
+      </div>
 
-<div class="panel">
-<div class="tablewrap">
-<table>
-<thead>
-<tr>
-<th>Feedback ID</th>
-<th>Passenger</th>
-<th>Trip</th>
-<th>Rating</th>
-<th>Date</th>
-<th>Comment</th>
-<th>Actions</th>
-</tr>
-</thead>
+      <div class="panel">
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Feedback ID</th>
+                <th>Passenger ID</th>
+                <th>Trip ID</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dataRows">
+              <tr><td colspan="6">Loading feedback...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-<tbody id="dataRows"></tbody>
+      <div class="modal" id="modal">
+        <div class="modalbox">
+          <div class="modalhead">
+            <h3 id="modalTitle">Add Feedback</h3>
+            <button class="close" type="button" onclick="closeModal()">×</button>
+          </div>
 
-</table>
-</div>
-</div>
+          <form id="feedbackForm">
+            <div class="form">
+              <label>Feedback ID
+                <input id="feedback_id" type="number" min="1" required>
+              </label>
+              <label>Passenger ID
+                <input id="passenger_id" type="number" min="1" required>
+              </label>
+              <label>Trip ID
+                <input id="trip_id" type="number" min="1" required>
+              </label>
+              <label>Rating (1–5)
+                <input id="rating" type="number" min="1" max="5" step="1" required>
+              </label>
+              <label>Comment
+                <textarea id="comments" rows="3" required></textarea>
+              </label>
+            </div>
 
-<div class="modal" id="modal">
-<div class="modalbox">
-<div class="modalhead">
-<h3>Add Feedback</h3>
-<button class="close" onclick="closeModal()">×</button>
-</div>
-
-<div class="form">
-<label>Feedback ID<input></label>
-<label>Passenger<input></label>
-<label>Trip ID<input></label>
-<label>Rating<input></label>
-<label>Comment<input></label>
-</div>
-
-<div class="modalfoot">
-<button class="btn" onclick="closeModal()">Cancel</button>
-<button class="btn primary" onclick="saveRecord()">Save</button>
-</div>
-</div>
-</div>
-
-</section>
-</main>
+            <div class="modalfoot">
+              <button class="btn" type="button" onclick="closeModal()">Cancel</button>
+              <button class="btn primary" type="submit">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
 <script src="js/app.js"></script>
-
 <script>
-async function loadMongoReviews() {
-    const dataRows = document.getElementById("dataRows");
+const API = "http://localhost:3000/api/feedback";
+let feedbackRecords = [];
+let editingFeedbackId = null;
 
-    try {
-        const response = await fetch("http://localhost:3000/api/reviews");
+const $ = id => document.getElementById(id);
 
-        if (!response.ok) {
-            throw new Error("Failed to load reviews");
-        }
-
-        const reviews = await response.json();
-
-        dataRows.innerHTML = "";
-
-        reviews.forEach((review, index) => {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>F${String(index + 1).padStart(3, "0")}</td>
-                <td>Passenger ${review.passenger_id}</td>
-                <td>Trip ${review.trip_id}</td>
-                <td>${review.rating} / 5</td>
-                <td>${review.review_date}</td>
-                <td>${review.comment}</td>
-                <td class="actions">
-                    <button class="btn" onclick="editRow()">Edit</button>
-                    <button class="btn danger" onclick="deleteRow(this)">Delete</button>
-                </td>
-            `;
-
-            dataRows.appendChild(row);
-        });
-
-    } catch (error) {
-        console.error("Error loading MongoDB reviews:", error);
-
-        dataRows.innerHTML = `
-            <tr>
-                <td colspan="7">Unable to load feedback from MongoDB.</td>
-            </tr>
-        `;
-    }
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
 
-loadMongoReviews();
-</script>
+async function loadFeedback() {
+  try {
+    const response = await fetch(API);
+    const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(data.error || "Unable to load feedback.");
+    }
+
+    feedbackRecords = data;
+    renderFeedback();
+  } catch (error) {
+    console.error("Error loading feedback:", error);
+    $("dataRows").innerHTML =
+      '<tr><td colspan="6">Unable to load feedback. Check the backend.</td></tr>';
+  }
+}
+
+function renderFeedback() {
+  const query = $("search").value.trim().toLowerCase();
+
+  const filtered = feedbackRecords.filter(record =>
+    Object.values(record).some(value =>
+      String(value ?? "").toLowerCase().includes(query)
+    )
+  );
+
+  if (filtered.length === 0) {
+    $("dataRows").innerHTML =
+      '<tr><td colspan="6">No feedback records found.</td></tr>';
+    return;
+  }
+
+  $("dataRows").innerHTML = filtered.map(record => {
+    const id = Number(record.FEEDBACK_ID);
+
+    return `
+      <tr>
+        <td>${escapeHTML(record.FEEDBACK_ID)}</td>
+        <td>${escapeHTML(record.PASSENGER_ID)}</td>
+        <td>${escapeHTML(record.TRIP_ID)}</td>
+        <td>${escapeHTML(record.RATING)} / 5</td>
+        <td>${escapeHTML(record.COMMENTS)}</td>
+        <td class="actions">
+          <button class="btn" onclick="editFeedback(${id})">Edit</button>
+          <button class="btn danger" onclick="deleteFeedback(${id})">Delete</button>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+function searchTable() {
+  renderFeedback();
+}
+
+function openModal() {
+  editingFeedbackId = null;
+  $("feedbackForm").reset();
+  $("feedback_id").disabled = false;
+  $("modalTitle").textContent = "Add Feedback";
+  $("modal").classList.add("show");
+}
+
+function closeModal() {
+  $("modal").classList.remove("show");
+}
+
+function editFeedback(id) {
+  const record = feedbackRecords.find(
+    item => Number(item.FEEDBACK_ID) === id
+  );
+
+  if (!record) return;
+
+  editingFeedbackId = id;
+  $("modalTitle").textContent = "Edit Feedback";
+  $("feedback_id").value = record.FEEDBACK_ID;
+  $("feedback_id").disabled = true;
+  $("passenger_id").value = record.PASSENGER_ID;
+  $("trip_id").value = record.TRIP_ID;
+  $("rating").value = record.RATING;
+  $("comments").value = record.COMMENTS ?? "";
+  $("modal").classList.add("show");
+}
+
+$("feedbackForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const record = {
+    feedback_id: Number($("feedback_id").value),
+    passenger_id: Number($("passenger_id").value),
+    trip_id: Number($("trip_id").value),
+    rating: Number($("rating").value),
+    comments: $("comments").value.trim()
+  };
+
+  try {
+    const isEditing = editingFeedbackId !== null;
+    const response = await fetch(
+      isEditing ? `${API}/${editingFeedbackId}` : API,
+      {
+        method: isEditing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(record)
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Unable to save feedback.");
+    }
+
+    closeModal();
+    await loadFeedback();
+    alert(isEditing ? "Feedback updated successfully." : "Feedback added successfully.");
+  } catch (error) {
+    console.error("Error saving feedback:", error);
+    alert(error.message);
+  }
+});
+
+async function deleteFeedback(id) {
+  if (!confirm("Are you sure you want to delete this feedback?")) return;
+
+  try {
+    const response = await fetch(`${API}/${id}`, { method: "DELETE" });
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Unable to delete feedback.");
+    }
+
+    await loadFeedback();
+    alert("Feedback deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting feedback:", error);
+    alert(error.message);
+  }
+}
+
+loadFeedback();
+</script>
 </body>
 </html>

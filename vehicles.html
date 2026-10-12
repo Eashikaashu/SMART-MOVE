@@ -1,1 +1,329 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Vehicles</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="active" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Vehicles</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Vehicles</h2><p>Manage vehicles, registration details and operating status.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search vehicles..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Vehicle ID</th><th>Registration</th><th>Type</th><th>Model</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>V001</td><td>WP CAB-1234</td><td>Bus</td><td>Ashok Leyland</td><td>45</td><td><span class='status ok'>Available</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>V002</td><td>WP CAA-4521</td><td>Van</td><td>Toyota Hiace</td><td>14</td><td><span class='status info'>In Service</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>V003</td><td>CP BAA-7788</td><td>Bus</td><td>Tata</td><td>52</td><td><span class='status warn'>Maintenance</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>V004</td><td>WP CAB-8899</td><td>Van</td><td>Nissan Caravan</td><td>12</td><td><span class='status ok'>Available</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Vehicle</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Vehicle ID<input></label><label>Registration<input></label><label>Vehicle Type<input></label><label>Model<input></label><label>Capacity<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SmartMove - Vehicles</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="side" id="side">
+        <div class="brand">
+            <div>
+                SMARTMOVE
+                <small>Transport Management System</small>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a class="active" href="vehicles.html">Vehicles</a>
+            <a href="drivers.html">Drivers</a>
+            <a href="routes.html">Routes</a>
+            <a href="passengers.html">Passengers</a>
+            <a href="trips.html">Trips</a>
+            <a href="bookings.html">Bookings</a>
+            <a href="payments.html">Payments</a>
+            <a href="maintenance.html">Maintenance</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="reports.html">Reports</a>
+            <a href="settings.html">Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+
+        <header class="top">
+            <div style="display:flex;align-items:center;gap:12px">
+                <button class="menu" onclick="toggleMenu()">☰</button>
+                <h1>Vehicles</h1>
+            </div>
+            <div class="user">Management Portal | Administrator</div>
+        </header>
+
+        <section class="content">
+
+            <div class="intro">
+                <h2>Vehicles</h2>
+                <p>Manage vehicles, registration details and operating status.</p>
+            </div>
+
+            <div class="toolbar">
+                <input
+                    id="search"
+                    oninput="searchTable()"
+                    placeholder="Search vehicles..."
+                >
+                <button class="btn primary" onclick="openModal()">+ Add</button>
+            </div>
+
+            <div class="panel">
+                <div class="tablewrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vehicle ID</th>
+                                <th>Registration</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="dataRows">
+                            <tr>
+                                <td colspan="6">Loading vehicles...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal" id="modal">
+                <div class="modalbox">
+
+                    <div class="modalhead">
+                        <h3>Add Vehicle</h3>
+                        <button class="close" onclick="closeModal()">×</button>
+                    </div>
+
+                    <div class="form">
+                        <label>
+                            Vehicle ID
+                            <input id="vehicleId" type="number">
+                        </label>
+
+                        <label>
+                            Registration
+                            <input id="registrationNo">
+                        </label>
+
+                        <label>
+                            Vehicle Type
+                            <input id="vehicleType">
+                        </label>
+
+                        <label>
+                            Capacity
+                            <input id="capacity" type="number">
+                        </label>
+
+                        <label>
+                            Status
+                            <select id="vehicleStatus">
+                                <option value="Available">Available</option>
+                                <option value="On Trip">On Trip</option>
+                                <option value="Maintenance">Maintenance</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="modalfoot">
+                        <button class="btn" onclick="closeModal()">Cancel</button>
+                        <button class="btn primary" onclick="saveRecord()">Save</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script src="js/app.js"></script>
+
+<script>
+    async function loadVehicles() {
+        const tbody = document.getElementById("dataRows");
+
+        try {
+            const response = await fetch("http://localhost:3000/api/vehicles");
+
+            if (!response.ok) {
+                throw new Error("Unable to load vehicles from Oracle.");
+            }
+
+            const vehicles = await response.json();
+
+            tbody.replaceChildren();
+
+            if (vehicles.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="6">No vehicles found.</td></tr>';
+                return;
+            }
+
+            vehicles.forEach(vehicle => {
+                const row = document.createElement("tr");
+
+                const values = [
+                    vehicle.VEHICLE_ID,
+                    vehicle.REGISTRATION_NO,
+                    vehicle.VEHICLE_TYPE,
+                    vehicle.CAPACITY,
+                    vehicle.STATUS
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value ?? "";
+                    row.appendChild(cell);
+                });
+
+                const actions = document.createElement("td");
+                actions.className = "actions";
+
+                const editButton = document.createElement("button");
+                editButton.className = "btn";
+                editButton.textContent = "Edit";
+                editButton.onclick = () => editVehicle(vehicle);
+
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "btn danger";
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = () => deleteVehicle(vehicle);
+
+                actions.append(editButton, deleteButton);
+                row.appendChild(actions);
+                tbody.appendChild(row);
+            });
+
+        } catch (error) {
+            console.error("Vehicle loading error:", error);
+
+            tbody.innerHTML =
+                '<tr><td colspan="6">Unable to load vehicles. Check that the backend is running.</td></tr>';
+        }
+    }
+
+    function searchTable() {
+        const searchValue = document
+            .getElementById("search")
+            .value.toLowerCase();
+
+        document.querySelectorAll("#dataRows tr").forEach(row => {
+            row.style.display = row.textContent
+                .toLowerCase()
+                .includes(searchValue) ? "" : "none";
+        });
+    }
+
+    // Load Oracle data when the page opens.
+    loadVehicles();
+    
+async function editVehicle(vehicle) {
+    const registrationNo = prompt(
+        "Enter registration number:",
+        vehicle.REGISTRATION_NO
+    );
+
+    if (registrationNo === null) return;
+
+    const vehicleType = prompt(
+        "Enter vehicle type:",
+        vehicle.VEHICLE_TYPE
+    );
+
+    if (vehicleType === null) return;
+
+    const capacityInput = prompt(
+        "Enter capacity:",
+        vehicle.CAPACITY
+    );
+
+    if (capacityInput === null) return;
+
+    const status = prompt(
+        "Enter status (Available, On Trip, Maintenance):",
+        vehicle.STATUS
+    );
+
+    if (status === null) return;
+
+    const capacity = Number(capacityInput);
+
+    if (
+        !registrationNo.trim() ||
+        !vehicleType.trim() ||
+        !Number.isInteger(capacity) ||
+        capacity <= 0 ||
+        !["Available", "On Trip", "Maintenance"].includes(status)
+    ) {
+        alert("Please enter valid vehicle details.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/vehicles/${vehicle.VEHICLE_ID}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    registration_no: registrationNo,
+                    vehicle_type: vehicleType,
+                    capacity: capacity,
+                    status: status
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Update failed.");
+        }
+
+        alert("Vehicle updated successfully!");
+        await loadVehicles();
+
+    } catch (error) {
+        console.error("Update error:", error);
+        alert("Unable to update vehicle. Check the backend.");
+    }
+}
+
+//delete 
+
+async function deleteVehicle(vehicle) {
+    const confirmed = confirm(
+        `Are you sure you want to delete vehicle ${vehicle.REGISTRATION_NO}?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/vehicles/${vehicle.VEHICLE_ID}`,
+            { method: "DELETE" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Delete failed.");
+        }
+
+        alert("Vehicle deleted successfully!");
+        await loadVehicles();
+
+    } catch (error) {
+        console.error("Delete error:", error);
+        alert(error.message);
+    }
+}
+
+
+
+</script>
+
+</body>
+</html>
+```

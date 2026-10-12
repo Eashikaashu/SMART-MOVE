@@ -1,1 +1,351 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Routes</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="active" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Routes</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Routes</h2><p>Manage transport routes and planned destinations.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search routes..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Route ID</th><th>Route Name</th><th>Start</th><th>Destination</th><th>Distance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>R001</td><td>Colombo - Kandy</td><td>Colombo</td><td>Kandy</td><td>116 km</td><td><span class='status ok'>Active</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>R002</td><td>Colombo - Galle</td><td>Colombo</td><td>Galle</td><td>126 km</td><td><span class='status ok'>Active</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>R003</td><td>Colombo - Negombo</td><td>Colombo</td><td>Negombo</td><td>38 km</td><td><span class='status ok'>Active</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>R004</td><td>Kandy - Nuwara Eliya</td><td>Kandy</td><td>Nuwara Eliya</td><td>76 km</td><td><span class='status warn'>Review</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Route</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Route ID<input></label><label>Route Name<input></label><label>Start Location<input></label><label>Destination<input></label><label>Distance<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartMove - Routes</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div>
+          SMARTMOVE
+          <small>Transport Management System</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="vehicles.html">Vehicles</a>
+        <a href="drivers.html">Drivers</a>
+        <a class="active" href="routes.html">Routes</a>
+        <a href="passengers.html">Passengers</a>
+        <a href="trips.html">Trips</a>
+        <a href="bookings.html">Bookings</a>
+        <a href="payments.html">Payments</a>
+        <a href="maintenance.html">Maintenance</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="reports.html">Reports</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="menu" onclick="toggleMenu()">☰</button>
+          <h1>Routes</h1>
+        </div>
+        <div class="user">Management Portal | Administrator</div>
+      </header>
+
+      <section class="content">
+        <div class="intro">
+          <h2>Routes</h2>
+          <p>Manage transport routes and planned destinations.</p>
+        </div>
+
+        <div class="toolbar">
+          <input
+            id="search"
+            oninput="searchTable()"
+            placeholder="Search routes..."
+          >
+          <button class="btn primary" onclick="openAddModal()">
+            + Add
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Route ID</th>
+                  <th>Route Name</th>
+                  <th>Start</th>
+                  <th>Destination</th>
+                  <th>Distance</th>
+                  <th>Duration (min)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dataRows">
+                <tr>
+                  <td colspan="7">Loading routes...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal" id="modal">
+          <div class="modalbox">
+            <div class="modalhead">
+              <h3 id="modalTitle">Add Route</h3>
+              <button class="close" onclick="closeRouteModal()">×</button>
+            </div>
+
+            <form id="routeForm" onsubmit="saveRoute(event)">
+              <div class="form">
+                <label>
+                  Route ID
+                  <input
+                    id="routeId"
+                    type="number"
+                    min="1"
+                    required
+                  >
+                </label>
+
+                <label>
+                  Route Name
+                  <input id="routeName" type="text" required>
+                </label>
+
+                <label>
+                  Start Location
+                  <input id="startLocation" type="text" required>
+                </label>
+
+                <label>
+                  Destination
+                  <input id="endLocation" type="text" required>
+                </label>
+
+                <label>
+                  Distance (km)
+                  <input
+                    id="distanceKm"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    required
+                  >
+                </label>
+
+                <label>
+                  Estimated Duration (minutes)
+                  <input
+                    id="estimatedDuration"
+                    type="number"
+                    min="1"
+                    required
+                  >
+                </label>
+              </div>
+
+              <div class="modalfoot">
+                <button
+                  class="btn"
+                  type="button"
+                  onclick="closeRouteModal()"
+                >
+                  Cancel
+                </button>
+                <button class="btn primary" type="submit">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+
+  <script>
+    const ROUTES_API = "http://localhost:3000/api/routes";
+    let editingRouteId = null;
+
+    // Load routes from the Oracle database
+    async function loadRoutes() {
+      const tbody = document.getElementById("dataRows");
+
+      try {
+        const response = await fetch(ROUTES_API);
+        const routes = await response.json();
+
+        if (!response.ok) {
+          throw new Error(routes.error || "Failed to load routes.");
+        }
+
+        tbody.innerHTML = "";
+
+        if (!routes.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="7">No routes found.</td></tr>';
+          return;
+        }
+
+        routes.forEach(route => {
+          const row = document.createElement("tr");
+
+          const values = [
+            route.ROUTE_ID,
+            route.ROUTE_NAME,
+            route.START_LOCATION,
+            route.END_LOCATION,
+            `${route.DISTANCE_KM} km`,
+            route.ESTIMATED_DURATION
+          ];
+
+          values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "";
+            row.appendChild(cell);
+          });
+
+          const actions = document.createElement("td");
+          actions.className = "actions";
+
+          const editButton = document.createElement("button");
+          editButton.className = "btn";
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => editRoute(route));
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn danger";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => deleteRoute(route));
+
+          actions.append(editButton, deleteButton);
+          row.appendChild(actions);
+          tbody.appendChild(row);
+        });
+
+        searchTable();
+      } catch (error) {
+        console.error("Error loading routes:", error);
+        tbody.innerHTML =
+          '<tr><td colspan="7">Unable to load routes. Check the backend server.</td></tr>';
+      }
+    }
+
+    function openAddModal() {
+      editingRouteId = null;
+      document.getElementById("routeForm").reset();
+
+      document.getElementById("routeId").disabled = false;
+      document.getElementById("modalTitle").textContent = "Add Route";
+
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function editRoute(route) {
+      editingRouteId = route.ROUTE_ID;
+
+      document.getElementById("routeId").value = route.ROUTE_ID;
+      document.getElementById("routeName").value = route.ROUTE_NAME ?? "";
+      document.getElementById("startLocation").value =
+        route.START_LOCATION ?? "";
+      document.getElementById("endLocation").value =
+        route.END_LOCATION ?? "";
+      document.getElementById("distanceKm").value = route.DISTANCE_KM ?? "";
+      document.getElementById("estimatedDuration").value =
+        route.ESTIMATED_DURATION ?? "";
+
+      document.getElementById("routeId").disabled = true;
+      document.getElementById("modalTitle").textContent = "Edit Route";
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function closeRouteModal() {
+      document.getElementById("modal").classList.remove("show");
+      document.getElementById("routeForm").reset();
+      document.getElementById("routeId").disabled = false;
+      editingRouteId = null;
+    }
+
+    async function saveRoute(event) {
+      event.preventDefault();
+
+      const isEditing = editingRouteId !== null;
+
+      const route = {
+        route_id: Number(document.getElementById("routeId").value),
+        route_name: document.getElementById("routeName").value.trim(),
+        start_location: document.getElementById("startLocation").value.trim(),
+        end_location: document.getElementById("endLocation").value.trim(),
+        distance_km: Number(document.getElementById("distanceKm").value),
+        estimated_duration: Number(
+          document.getElementById("estimatedDuration").value
+        )
+      };
+
+      const url = isEditing
+        ? `${ROUTES_API}/${editingRouteId}`
+        : ROUTES_API;
+
+      try {
+        const response = await fetch(url, {
+          method: isEditing ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(route)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to save route.");
+        }
+
+        alert(result.message || "Route saved successfully.");
+        closeRouteModal();
+        await loadRoutes();
+      } catch (error) {
+        console.error("Error saving route:", error);
+        alert(error.message);
+      }
+    }
+
+    async function deleteRoute(route) {
+      if (!confirm(`Delete route "${route.ROUTE_NAME}"?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${ROUTES_API}/${route.ROUTE_ID}`,
+          { method: "DELETE" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to delete route.");
+        }
+
+        alert(result.message || "Route deleted successfully.");
+        await loadRoutes();
+      } catch (error) {
+        console.error("Error deleting route:", error);
+        alert(error.message);
+      }
+    }
+
+    function searchTable() {
+      const query = document
+        .getElementById("search")
+        .value.toLowerCase()
+        .trim();
+
+      document.querySelectorAll("#dataRows tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(query)
+          ? ""
+          : "none";
+      });
+    }
+
+    // Load database records when the page opens
+    document.addEventListener("DOMContentLoaded", loadRoutes);
+  </script>
+</body>
+</html>

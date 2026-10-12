@@ -1,1 +1,384 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Reports</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="active" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Reports</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Reports</h2><p>Business reports for transport operations.</p></div><div class="cards"><div class="card"><div class="label">Revenue This Month</div><div class="value">Rs. 4.82M</div></div><div class="card"><div class="label">Tickets Sold</div><div class="value">2,416</div></div><div class="card"><div class="label">Top Route</div><div class="value" style="font-size:18px">Colombo - Kandy</div></div><div class="card"><div class="label">Vehicles Due</div><div class="value">5</div></div></div><div class="panel"><h3>Business Reports</h3><div class="list"><div class="listrow"><span>Most frequently used routes based on ticket bookings</span><button class="btn" onclick="report('Route usage')">View</button></div><div class="listrow"><span>Total revenue for a selected period</span><button class="btn" onclick="report('Revenue')">View</button></div><div class="listrow"><span>Passenger travel history</span><button class="btn" onclick="report('Passenger history')">View</button></div><div class="listrow"><span>Vehicles due for maintenance</span><button class="btn" onclick="report('Maintenance')">View</button></div><div class="listrow"><span>Payment collection summary</span><button class="btn" onclick="report('Payments')">View</button></div></div></div><div class="notice">Sample values are displayed until the Oracle database and PL/SQL reports are connected.</div></section></main></div><script src="js/app.js"></script><script>function report(name){alert(name+" report selected. Connect this action to the Oracle query later.");}</script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartMove - Reports</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="brand">
+      <div>SMARTMOVE<small>Transport Management System</small></div>
+    </div>
+
+    <nav class="nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="vehicles.html">Vehicles</a>
+      <a href="drivers.html">Drivers</a>
+      <a href="routes.html">Routes</a>
+      <a href="passengers.html">Passengers</a>
+      <a href="trips.html">Trips</a>
+      <a href="bookings.html">Bookings</a>
+      <a href="payments.html">Payments</a>
+      <a href="maintenance.html">Maintenance</a>
+      <a href="feedback.html">Feedback</a>
+      <a class="active" href="reports.html">Reports</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu" onclick="toggleMenu()">☰</button>
+        <h1>Reports</h1>
+      </div>
+      <div class="user">Management Portal | Administrator</div>
+    </header>
+
+    <section class="content">
+      <div class="intro">
+        <h2>Reports</h2>
+        <p>Business reports for transport operations.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="label">Total Drivers</div>
+          <div class="value" id="totalDrivers">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Vehicles</div>
+          <div class="value" id="totalVehicles">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Routes</div>
+          <div class="value" id="totalRoutes">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Passengers</div>
+          <div class="value" id="totalPassengers">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Trips</div>
+          <div class="value" id="totalTrips">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Bookings</div>
+          <div class="value" id="totalBookings">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Total Payments</div>
+          <div class="value" id="totalPayments">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Maintenance Records</div>
+          <div class="value" id="totalMaintenance">—</div>
+        </div>
+        <div class="card">
+          <div class="label">Feedback Records</div>
+          <div class="value" id="totalFeedback">—</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Business Reports</h3>
+        <div class="list">
+          <div class="listrow">
+            <span>Most frequently used routes based on ticket bookings</span>
+            <button class="btn" onclick="report('Route usage')">View</button>
+          </div>
+
+          <div class="listrow">
+            <span>Total revenue for a selected period</span>
+            <button class="btn" onclick="report('Revenue')">View</button>
+          </div>
+
+          <div class="listrow">
+            <span>Passenger travel history</span>
+            <button class="btn" onclick="report('Passenger travel history')">View</button>
+          </div>
+
+          <div class="listrow">
+            <span>Vehicles due for maintenance</span>
+            <button class="btn" onclick="report('Maintenance')">View</button>
+          </div>
+
+          <div class="listrow">
+            <span>Payment collection summary</span>
+            <button class="btn" onclick="report('Payments')">View</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="notice" id="reportNotice">
+        Report summaries are loaded from the Oracle database.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+const SUMMARY_API = "http://localhost:3000/api/reports/summary";
+
+async function loadReportSummary() {
+  const fields = {
+    TOTAL_DRIVERS: "totalDrivers",
+    TOTAL_VEHICLES: "totalVehicles",
+    TOTAL_ROUTES: "totalRoutes",
+    TOTAL_PASSENGERS: "totalPassengers",
+    TOTAL_TRIPS: "totalTrips",
+    TOTAL_BOOKINGS: "totalBookings",
+    TOTAL_PAYMENTS: "totalPayments",
+    TOTAL_MAINTENANCE: "totalMaintenance",
+    TOTAL_FEEDBACK: "totalFeedback"
+  };
+
+  try {
+    const response = await fetch(SUMMARY_API);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Unable to load report summary.");
+    }
+
+    Object.entries(fields).forEach(([column, elementId]) => {
+      document.getElementById(elementId).textContent =
+        Number(data[column] ?? 0).toLocaleString();
+    });
+
+    document.getElementById("reportNotice").textContent =
+      "Report summary successfully loaded from Oracle database.";
+
+  } catch (error) {
+    console.error("Error loading report summary:", error);
+
+    document.getElementById("reportNotice").textContent =
+      "Unable to load report summary. Please check that the backend is running.";
+  }
+}
+
+async function report(name) {
+
+  // ROUTE USAGE REPORT
+  if (name === "Route usage") {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/reports/route-usage"
+      );
+
+      const routes = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          routes.error || "Unable to load route usage report."
+        );
+      }
+
+      if (routes.length === 0) {
+        alert("No route usage records found.");
+        return;
+      }
+
+      const details = routes.map(route =>
+        `${route.ROUTE_NAME} (${route.START_LOCATION} - ${route.END_LOCATION}): ${route.TOTAL_BOOKINGS} bookings`
+      ).join("\n");
+
+      alert("ROUTE USAGE REPORT\n\n" + details);
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+
+    return;
+  }
+
+  // REVENUE REPORT
+  if (name === "Revenue") {
+    const startDate = prompt(
+      "Enter start date (YYYY-MM-DD):"
+    );
+
+    if (!startDate) return;
+
+    const endDate = prompt(
+      "Enter end date (YYYY-MM-DD):"
+    );
+
+    if (!endDate) return;
+
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (
+      !datePattern.test(startDate) ||
+      !datePattern.test(endDate) ||
+      startDate > endDate
+    ) {
+      alert("Please enter valid dates in YYYY-MM-DD format.");
+      return;
+    }
+
+    try {
+      const url =
+        "http://localhost:3000/api/reports/revenue" +
+        `?start_date=${encodeURIComponent(startDate)}` +
+        `&end_date=${encodeURIComponent(endDate)}`;
+
+      const response = await fetch(url);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Unable to load revenue report."
+        );
+      }
+
+      alert(
+        "REVENUE REPORT\n\n" +
+        JSON.stringify(result, null, 2)
+      );
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+
+    return;
+  }
+
+  // PASSENGER TRAVEL HISTORY REPORT
+  if (name === "Passenger travel history") {
+    const passengerId = prompt("Enter Passenger ID:");
+
+    if (!passengerId) return;
+
+    if (!/^\d+$/.test(passengerId) || Number(passengerId) <= 0) {
+      alert("Please enter a valid Passenger ID.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/reports/passenger-history?passenger_id=" +
+        encodeURIComponent(passengerId)
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Unable to load passenger travel history."
+        );
+      }
+
+      if (!Array.isArray(result) || result.length === 0) {
+        alert("No travel history found for this passenger.");
+        return;
+      }
+
+      const details = result.map(item =>
+        `Passenger: ${item.PASSENGER_NAME}\n` +
+        `Booking ID: ${item.BOOKING_ID}\n` +
+        `Trip ID: ${item.TRIP_ID}\n` +
+        `Route: ${item.START_LOCATION} - ${item.END_LOCATION}\n` +
+        `Booking Status: ${item.BOOKING_STATUS}`
+      ).join("\n\n");
+
+      alert("PASSENGER TRAVEL HISTORY\n\n" + details);
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+
+    return;
+  }
+
+  
+if (name === "Maintenance") {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/reports/maintenance"
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error || "Unable to load maintenance report."
+      );
+    }
+
+    if (result.length === 0) {
+      alert("No pending maintenance records found.");
+      return;
+    }
+
+    const details = result.map(item =>
+      `Maintenance ID: ${item.MAINTENANCE_ID}\n` +
+      `Vehicle: ${item.REGISTRATION_NO}\n` +
+      `Type: ${item.MAINTENANCE_TYPE}\n` +
+      `Status: ${item.STATUS}`
+    ).join("\n\n");
+
+    alert("MAINTENANCE REPORT\n\n" + details);
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+
+  return;
+}
+
+
+  // OTHER REPORTS
+  
+if (name === "Payments") {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/reports/payments"
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error || "Unable to load payment report."
+      );
+    }
+
+    if (result.length === 0) {
+      alert("No payment records found.");
+      return;
+    }
+
+    const details = result.map(item =>
+      `Status: ${item.STATUS}\n` +
+      `Total Payments: ${item.TOTAL_PAYMENTS}\n` +
+      `Total Amount: Rs. ${Number(item.TOTAL_AMOUNT).toLocaleString()}`
+    ).join("\n\n");
+
+    alert("PAYMENT COLLECTION SUMMARY\n\n" + details);
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+
+  return;
+}
+
+alert(name + " report will be connected in the next step.");
+
+}
+
+loadReportSummary();
+</script>
+</body>
+</html>
