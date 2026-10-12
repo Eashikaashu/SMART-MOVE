@@ -1,1 +1,365 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SmartMove - Passengers</title><link rel="stylesheet" href="css/style.css"></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="active" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Passengers</h1></div><div class="user">Management Portal | Administrator</div></header><section class="content"><div class="intro"><h2>Passengers</h2><p>Manage registered passenger records.</p></div><div class="toolbar"><input id="search" oninput="searchTable()" placeholder="Search passengers..."><button class="btn primary" onclick="openModal()">+ Add</button></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Passenger ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dataRows"><tr><td>P001</td><td>Nimal Perera</td><td>nimal@example.com</td><td>0771231234</td><td>2026-08-10</td><td><span class='status ok'>Active</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>P002</td><td>Sarah Fernando</td><td>sarah@example.com</td><td>0712345678</td><td>2026-08-15</td><td><span class='status ok'>Active</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>P003</td><td>Kasun Silva</td><td>kasun@example.com</td><td>0763456789</td><td>2026-08-18</td><td><span class='status bad'>Inactive</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr><tr><td>P004</td><td>Ayesha Kumar</td><td>ayesha@example.com</td><td>0754567890</td><td>2026-08-20</td><td><span class='status ok'>Active</span></td><td class="actions"><button class="btn" onclick="editRow()">Edit</button><button class="btn danger" onclick="deleteRow(this)">Delete</button></td></tr></tbody></table></div></div><div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h3>Add Passenger</h3><button class="close" onclick="closeModal()">×</button></div><div class="form"><label>Passenger ID<input></label><label>Full Name<input></label><label>Email<input></label><label>Phone<input></label><label>Registered Date<input></label></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveRecord()">Save</button></div></div></div></section></main></div><script src="js/app.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartMove - Passengers</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div>
+          SMARTMOVE
+          <small>Transport Management System</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="vehicles.html">Vehicles</a>
+        <a href="drivers.html">Drivers</a>
+        <a href="routes.html">Routes</a>
+        <a class="active" href="passengers.html">Passengers</a>
+        <a href="trips.html">Trips</a>
+        <a href="bookings.html">Bookings</a>
+        <a href="payments.html">Payments</a>
+        <a href="maintenance.html">Maintenance</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="reports.html">Reports</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="menu" onclick="toggleMenu()">☰</button>
+          <h1>Passengers</h1>
+        </div>
+        <div class="user">Management Portal | Administrator</div>
+      </header>
+
+      <section class="content">
+        <div class="intro">
+          <h2>Passengers</h2>
+          <p>Manage registered passenger records.</p>
+        </div>
+
+        <div class="toolbar">
+          <input
+            id="search"
+            oninput="searchTable()"
+            placeholder="Search passengers..."
+          >
+          <button class="btn primary" onclick="openAddModal()">
+            + Add
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Passenger ID</th>
+                  <th>Name</th>
+                  <th>NIC / Passport</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody id="dataRows">
+                <tr>
+                  <td colspan="6">Loading passengers...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal" id="modal">
+          <div class="modalbox">
+            <div class="modalhead">
+              <h3 id="modalTitle">Add Passenger</h3>
+              <button class="close" onclick="closePassengerModal()">×</button>
+            </div>
+
+            <form id="passengerForm" onsubmit="savePassenger(event)">
+              <div class="form">
+                <label>
+                  Passenger ID
+                  <input
+                    id="passengerId"
+                    type="number"
+                    min="1"
+                    required
+                  >
+                </label>
+
+                <label>
+                  Full Name
+                  <input id="passengerName" type="text" required>
+                </label>
+
+                <label>
+                  NIC / Passport
+                  <input id="nicPassport" type="text" required>
+                </label>
+
+                <label>
+                  Phone
+                  <input id="passengerPhone" type="tel" required>
+                </label>
+
+                <label>
+                  Email
+                  <input id="passengerEmail" type="email" required>
+                </label>
+              </div>
+
+              <div class="modalfoot">
+                <button
+                  class="btn"
+                  type="button"
+                  onclick="closePassengerModal()"
+                >
+                  Cancel
+                </button>
+
+                <button class="btn primary" type="submit">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+
+  <script>
+    const PASSENGERS_API = "http://localhost:3000/api/passengers";
+    let editingPassengerId = null;
+
+    // Load passengers from Oracle
+    async function loadPassengers() {
+      const tbody = document.getElementById("dataRows");
+
+      try {
+        const response = await fetch(PASSENGERS_API);
+        const passengers = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            passengers.error || "Unable to load passengers."
+          );
+        }
+
+        tbody.innerHTML = "";
+
+        if (passengers.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="6">No passengers found.</td></tr>';
+          return;
+        }
+
+        passengers.forEach(passenger => {
+          const row = document.createElement("tr");
+
+          const values = [
+            passenger.PASSENGER_ID,
+            passenger.PASSENGER_NAME,
+            passenger.NIC_PASSPORT,
+            passenger.PHONE,
+            passenger.EMAIL
+          ];
+
+          values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "";
+            row.appendChild(cell);
+          });
+
+          const actions = document.createElement("td");
+          actions.className = "actions";
+
+          const editButton = document.createElement("button");
+          editButton.className = "btn";
+          editButton.textContent = "Edit";
+          editButton.addEventListener(
+            "click",
+            () => editPassenger(passenger)
+          );
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn danger";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener(
+            "click",
+            () => deletePassenger(passenger)
+          );
+
+          actions.append(editButton, deleteButton);
+          row.appendChild(actions);
+          tbody.appendChild(row);
+        });
+
+        searchTable();
+
+      } catch (error) {
+        console.error("Error loading passengers:", error);
+
+        tbody.innerHTML =
+          '<tr><td colspan="6">Unable to load passengers. Check the backend server.</td></tr>';
+      }
+    }
+
+    function openAddModal() {
+      editingPassengerId = null;
+
+      document.getElementById("passengerForm").reset();
+      document.getElementById("passengerId").disabled = false;
+      document.getElementById("modalTitle").textContent = "Add Passenger";
+
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function editPassenger(passenger) {
+      editingPassengerId = passenger.PASSENGER_ID;
+
+      document.getElementById("passengerId").value =
+        passenger.PASSENGER_ID;
+
+      document.getElementById("passengerName").value =
+        passenger.PASSENGER_NAME ?? "";
+
+      document.getElementById("nicPassport").value =
+        passenger.NIC_PASSPORT ?? "";
+
+      document.getElementById("passengerPhone").value =
+        passenger.PHONE ?? "";
+
+      document.getElementById("passengerEmail").value =
+        passenger.EMAIL ?? "";
+
+      document.getElementById("passengerId").disabled = true;
+
+      document.getElementById("modalTitle").textContent = "Edit Passenger";
+      document.getElementById("modal").classList.add("show");
+    }
+
+    function closePassengerModal() {
+      document.getElementById("modal").classList.remove("show");
+      document.getElementById("passengerForm").reset();
+      document.getElementById("passengerId").disabled = false;
+
+      editingPassengerId = null;
+    }
+
+    async function savePassenger(event) {
+      event.preventDefault();
+
+      const isEditing = editingPassengerId !== null;
+
+      const passenger = {
+        passenger_id: Number(
+          document.getElementById("passengerId").value
+        ),
+        passenger_name: document
+          .getElementById("passengerName").value.trim(),
+        nic_passport: document
+          .getElementById("nicPassport").value.trim(),
+        phone: document
+          .getElementById("passengerPhone").value.trim(),
+        email: document
+          .getElementById("passengerEmail").value.trim()
+      };
+
+      const url = isEditing
+        ? `${PASSENGERS_API}/${editingPassengerId}`
+        : PASSENGERS_API;
+
+      try {
+        const response = await fetch(url, {
+          method: isEditing ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(passenger)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.error || "Unable to save passenger."
+          );
+        }
+
+        alert(result.message || "Passenger saved successfully.");
+
+        closePassengerModal();
+        await loadPassengers();
+
+      } catch (error) {
+        console.error("Error saving passenger:", error);
+        alert(error.message);
+      }
+    }
+
+    async function deletePassenger(passenger) {
+      const confirmed = confirm(
+        `Delete passenger "${passenger.PASSENGER_NAME}"?`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch(
+          `${PASSENGERS_API}/${passenger.PASSENGER_ID}`,
+          { method: "DELETE" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.error || "Unable to delete passenger."
+          );
+        }
+
+        alert(result.message || "Passenger deleted successfully.");
+
+        await loadPassengers();
+
+      } catch (error) {
+        console.error("Error deleting passenger:", error);
+        alert(error.message);
+      }
+    }
+
+    function searchTable() {
+      const query = document
+        .getElementById("search")
+        .value.toLowerCase()
+        .trim();
+
+      document.querySelectorAll("#dataRows tr").forEach(row => {
+        row.style.display = row.textContent
+          .toLowerCase()
+          .includes(query) ? "" : "none";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPassengers);
+  </script>
+</body>
+</html>
