@@ -9,22 +9,178 @@
 </style></head><body><div class="layout"><aside class="side" id="side"><div class="brand"><div>SMARTMOVE<small>Transport Management System</small></div></div><nav class="nav"><a class="active" href="dashboard.html">Dashboard</a><a class="" href="vehicles.html">Vehicles</a><a class="" href="drivers.html">Drivers</a><a class="" href="routes.html">Routes</a><a class="" href="passengers.html">Passengers</a><a class="" href="trips.html">Trips</a><a class="" href="bookings.html">Bookings</a><a class="" href="payments.html">Payments</a><a class="" href="maintenance.html">Maintenance</a><a class="" href="feedback.html">Feedback</a><a class="" href="reports.html">Reports</a><a class="" href="settings.html">Settings</a></nav></aside><main class="main"><header class="top"><div style="display:flex;align-items:center;gap:12px"><button class="menu" onclick="toggleMenu()">☰</button><h1>Dashboard</h1></div><div class="user">Management Portal &nbsp;|&nbsp; Administrator</div></header><section class="content">
 <div class="intro"><h2>Dashboard</h2><p>SmartMove transport operations overview.</p></div>
 <div class="cards">
-<div class="card"><div class="label">Total Vehicles</div><div class="value">42</div></div>
-<div class="card"><div class="label">Active Drivers</div><div class="value">36</div></div>
-<div class="card"><div class="label">Today's Trips</div><div class="value">128</div></div>
-<div class="card"><div class="label">Today's Revenue</div><div class="value">Rs. 245,800</div></div>
+
+<div class="card">
+  <div class="label">Total Vehicles</div>
+  <div class="value" id="totalVehicles">0</div>
+</div>
+<div class="card">
+  <div class="label">Total Drivers</div>
+  <div class="value" id="totalDrivers">0</div>
+</div>
+<div class="card">
+  <div class="label">Total Trips</div>
+  <div class="value" id="totalTrips">0</div>
+</div>
+<div class="card">
+  <div class="label">Total Bookings</div>
+  <div class="value" id="totalBookings">0</div>
+</div>
+
 </div>
 <div class="grid2">
 <div class="panel"><h3>Recent Trips</h3><div class="tablewrap"><table><thead><tr><th>Trip ID</th><th>Route</th><th>Vehicle</th><th>Time</th><th>Status</th></tr></thead><tbody>
-<tr><td>TRP001</td><td>Colombo - Kandy</td><td>WP CAB-1234</td><td>08:30</td><td><span class="status ok">Completed</span></td></tr>
-<tr><td>TRP002</td><td>Colombo - Galle</td><td>WP CAA-4521</td><td>09:15</td><td><span class="status info">Running</span></td></tr>
-<tr><td>TRP003</td><td>Kandy - Colombo</td><td>CP BAA-7788</td><td>10:00</td><td><span class="status warn">Scheduled</span></td></tr>
-<tr><td>TRP004</td><td>Colombo - Negombo</td><td>WP CAB-8899</td><td>11:30</td><td><span class="status warn">Scheduled</span></td></tr>
+
+<tbody id="recentTripsBody">
+  <tr>
+    <td colspan="5" class="empty">Loading recent trips...</td>
+  </tr>
+</tbody>
+
 </tbody></table></div></div>
 <div><div class="panel"><h3>Fleet Status</h3><div class="list">
 <div class="listrow"><span>Available</span><strong>18</strong></div><div class="listrow"><span>In Service</span><strong>16</strong></div><div class="listrow"><span>Maintenance</span><strong>5</strong></div><div class="listrow"><span>Out of Service</span><strong>3</strong></div>
 </div></div><div class="panel"><h3>Today's Summary</h3><div class="list">
 <div class="listrow"><span>Bookings</span><strong>84</strong></div><div class="listrow"><span>Passengers</span><strong>312</strong></div><div class="listrow"><span>Completed Trips</span><strong>74</strong></div><div class="listrow"><span>Pending Payments</span><strong>12</strong></div>
-</div></div></div></div>
-<div class="panel"><h3>Recent Feedback</h3><div class="list"><div><strong>Nimal Perera</strong> <span class="stars">★★★★★</span><div class="muted">Comfortable journey and good service.</div></div><div><strong>Sarah Fernando</strong> <span class="stars">★★★★☆</span><div class="muted">Driver was friendly and the trip was on time.</div></div></div></div>
-</section></main></div><script>function toggleMenu(){document.getElementById('side').classList.toggle('open')} </script></body></html>
+</div></div></div></div> 
+<div class="panel">
+    <h3>Announcements</h3>
+    <div id="announcementsList" class="list">
+        <div class="muted">Loading announcements...</div>
+    </div>
+</div> <div class="panel"><h3>Recent Feedback</h3> <div class="list"><div><strong>Nimal Perera</strong> <span class="stars">★★★★★</span><div class="muted">Comfortable journey and good service.</div></div><div><strong>Sarah Fernando</strong> <span class="stars">★★★★☆</span><div class="muted">Driver was friendly and the trip was on time.</div></div></div></div>
+</section></main></div><script>function toggleMenu(){document.getElementById('side').classList.toggle('open')} </script>
+<script>
+async function loadAnnouncements() {
+    const list = document.getElementById("announcementsList");
+
+    try {
+        const response = await fetch("http://localhost:3000/api/announcements");
+
+        if (!response.ok) {
+            throw new Error("Could not load announcements");
+        }
+
+        const announcements = await response.json();
+
+        list.innerHTML = "";
+
+        announcements.forEach(function (item) {
+            const announcement = document.createElement("div");
+            announcement.className = "listrow";
+
+            const title = document.createElement("strong");
+            title.textContent = item.title;
+
+            const message = document.createElement("div");
+            message.textContent = item.message;
+
+            announcement.appendChild(title);
+            announcement.appendChild(message);
+            list.appendChild(announcement);
+        });
+    } catch (error) {
+        list.textContent = "Unable to load announcements. Please check the backend.";
+        console.error(error);
+    }
+}
+
+loadAnnouncements();
+
+async function loadDashboardSummary() {
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/dashboard/summary"
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to load dashboard data");
+    }
+
+    const data = await response.json();
+
+document.getElementById("totalVehicles").textContent =
+  data.TOTAL_VEHICLES;
+
+document.getElementById("totalDrivers").textContent =
+  data.TOTAL_DRIVERS;
+
+document.getElementById("totalTrips").textContent =
+  data.TOTAL_TRIPS;
+
+document.getElementById("totalBookings").textContent =
+  data.TOTAL_BOOKINGS;
+  } catch (error) {
+    console.error("Dashboard error:", error);
+  }
+}
+
+loadDashboardSummary();
+
+
+async function loadRecentTrips() {
+  const tbody = document.getElementById("recentTripsBody");
+
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/dashboard/recent-trips"
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to load recent trips");
+    }
+
+    const trips = await response.json();
+    tbody.innerHTML = "";
+
+    if (trips.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="empty">No trips available.</td></tr>';
+      return;
+    }
+
+    trips.forEach(function (trip) {
+      const row = document.createElement("tr");
+
+      const values = [
+        "TRP" + String(trip.TRIP_ID).padStart(3, "0"),
+        trip.ROUTE_NAME || "—",
+        trip.REGISTRATION_NO || "—",
+        trip.DEPARTURE_TIME
+          ? new Date(trip.DEPARTURE_TIME).toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "Asia/Colombo"
+            })
+          : "—",
+        trip.STATUS || "—"
+      ];
+
+      values.forEach(function (value, index) {
+        const cell = document.createElement("td");
+
+        if (index === 4) {
+          const badge = document.createElement("span");
+          badge.className = "status info";
+          badge.textContent = value;
+          cell.appendChild(badge);
+        } else {
+          cell.textContent = value;
+        }
+
+        row.appendChild(cell);
+      });
+
+      tbody.appendChild(row);
+    });
+  } catch (error) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" class="empty">Unable to load recent trips.</td></tr>';
+    console.error("Recent trips error:", error);
+  }
+}
+
+loadRecentTrips();
+
+
+</script></body></html> 
